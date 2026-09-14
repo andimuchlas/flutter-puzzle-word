@@ -1,0 +1,635 @@
+Design and prototype a complete mobile casual crossword / TTS word puzzle game.
+
+IMPORTANT:
+The UI and UX MUST be designed according to the Stitch-generated design system and visual language.
+Stitch is the SOURCE OF TRUTH for the entire UI/UX.
+Do NOT reinterpret the design into a generic Flutter UI.
+Do NOT redesign screens independently.
+Do NOT introduce a different visual style between screens.
+
+The final design should feel like a real shipped mobile game, not an AI-generated UI concept.
+
+==================================================
+PRODUCT
+==================================================
+
+Game type:
+- Casual crossword / TTS word puzzle
+- Android-first
+- Portrait orientation
+- One-handed mobile interaction
+- Short play sessions: approximately 2–10 minutes
+- Relaxing but satisfying gameplay
+- Primarily offline playable
+- Monetized through:
+  1. Optional rewarded ads
+  2. Remove Ads purchase
+  3. Powerup purchases
+
+Core gameplay is a crossword/TTS grid.
+
+This is NOT a Wordscapes-style letter-circle game.
+
+Do NOT use:
+- Letter wheel gameplay
+- Letter circle input
+- Word-connect mechanics
+- Candy Crush style gameplay
+- Match-3 mechanics
+- Generic "word game" UI
+
+The crossword/TTS grid must be the visual and interaction identity of the game.
+
+==================================================
+DESIGN PHILOSOPHY
+==================================================
+
+The interface should look intentionally designed by a professional mobile game designer.
+
+Avoid the common appearance of AI-generated interfaces:
+
+- No excessive gradients
+- No excessive glassmorphism
+- No random floating cards
+- No excessive pill-shaped buttons
+- No generic dashboard layouts
+- No excessive shadows
+- No neon colors
+- No meaningless decorative elements
+- No excessive icons
+- No stock-looking illustrations
+- No generic "premium SaaS" appearance
+- No oversized typography without purpose
+- No excessive rounded rectangles
+- No visual clutter
+
+Use a restrained, cohesive visual language.
+
+The game should feel:
+- warm
+- approachable
+- polished
+- calm
+- playful
+- readable
+- tactile
+- game-like
+- production-ready
+
+Visual personality should come primarily from:
+- typography
+- spacing
+- crossword grid
+- level/map presentation
+- small environmental illustrations
+- subtle animation
+- feedback states
+
+NOT from excessive visual effects.
+
+==================================================
+CORE DESIGN SYSTEM
+==================================================
+
+Create one reusable design system and use it consistently across ALL screens.
+
+Define:
+
+1. Color system
+2. Typography system
+3. Spacing scale
+4. Corner radius system
+5. Button styles
+6. Icon style
+7. Card style
+8. Grid cell style
+9. Progress indicators
+10. Modal/dialog style
+11. Navigation patterns
+12. Feedback states
+13. Animation principles
+
+Every screen must reuse these components.
+
+Do not invent new components for individual screens unless absolutely necessary.
+
+==================================================
+GAME STRUCTURE
+==================================================
+
+Main navigation:
+
+HOME
+MAP
+SHOP
+SETTINGS
+
+Primary user flow:
+
+Launch
+→ Home
+→ Island / World Map
+→ Level Selection
+→ Crossword Gameplay
+→ Level Complete
+→ Next Level / Map
+
+Secondary flows:
+
+Home
+→ Daily Reward
+
+Gameplay
+→ Hint / Powerup
+→ Rewarded Ad
+→ Pause
+
+Home / Shop
+→ Remove Ads
+→ Powerups
+
+==================================================
+SCREEN 1 — HOME
+==================================================
+
+Create a polished casual-game home screen.
+
+The screen should immediately communicate:
+
+- Player progress
+- Current world/island
+- Continue playing
+- Currency
+- Daily reward
+- Navigation
+
+Prioritize the "Continue" action.
+
+Example structure:
+
+Top:
+- Player progress
+- Coin balance
+
+Main:
+- Current island/world illustration
+- Current level
+- Large Continue button
+
+Secondary:
+- Daily reward
+- Small progression information
+
+Bottom navigation:
+- Home
+- Map
+- Shop
+- Settings
+
+Keep the screen visually calm.
+
+Do not turn the home screen into a dashboard.
+
+==================================================
+SCREEN 2 — WORLD / ISLAND MAP
+==================================================
+
+Create a visual progression map.
+
+The player progresses through multiple themed islands or locations.
+
+The map should visually communicate:
+
+- Completed levels
+- Current level
+- Locked levels
+- World progression
+
+Use a simple path-based progression system.
+
+Each level node should have clear states:
+
+LOCKED
+AVAILABLE
+CURRENT
+COMPLETED
+
+Completed levels may show stars or completion indicators.
+
+The map should feel like part of the game world, not like a generic UI list.
+
+Avoid excessive UI panels covering the map.
+
+==================================================
+SCREEN 3 — LEVEL SELECTION
+==================================================
+
+If a separate level selection screen is used, keep it lightweight.
+
+Display:
+
+- World title
+- World progress
+- Level nodes
+- Completion status
+- Stars
+
+Do not use a dense spreadsheet/grid of level numbers.
+
+The player should understand where they are in progression immediately.
+
+==================================================
+SCREEN 4 — CROSSWORD / TTS GAMEPLAY
+==================================================
+
+THIS IS THE MOST IMPORTANT SCREEN.
+
+The crossword board is the primary visual identity of the game.
+
+Use a real crossword/TTS-style grid.
+
+Example:
+
+┌─────────────────────────┐
+│ ← Tropical Coast    1,450│
+│                         │
+│       LEVEL 12          │
+│                         │
+│    ┌───┬───┬───┬───┐    │
+│    │ 1 │ A │ P │ P │    │
+│    ├───┼───┼───┼───┤    │
+│    │   │ E │   │   │    │
+│    ├───┼───┼───┼───┤    │
+│    │ C │   │   │   │    │
+│    └───┴───┴───┴───┘    │
+│                         │
+│  "A tropical fruit..."   │
+│                         │
+│       A P P L E         │
+│                         │
+│   [Hint]       [Skip]   │
+└─────────────────────────┘
+
+The exact visual layout should follow the Stitch design system.
+
+Gameplay requirements:
+
+- Crossword cells must be large enough for touch interaction.
+- Selected cell has a clear visual state.
+- Selected word is visually highlighted.
+- Filled letters are immediately readable.
+- Incorrect answers have clear but subtle feedback.
+- Correct answers animate into place.
+- Completed words have a satisfying visual response.
+- Completing the puzzle has a stronger success animation.
+
+The grid must remain the dominant element.
+
+Do not allow decorative elements to compete with the crossword.
+
+==================================================
+CROSSWORD INTERACTION
+==================================================
+
+The user should be able to:
+
+- Tap a crossword cell
+- Select a word
+- Enter letters
+- Change selected word direction where applicable
+- Remove a letter
+- Use hints
+- Reveal a letter
+- Reveal a word
+- Skip / continue where appropriate
+
+Input should feel fast and tactile.
+
+Avoid creating a traditional text input field.
+
+Use a custom game keyboard if appropriate.
+
+Keyboard requirements:
+
+- Large touch targets
+- Clear hierarchy
+- Comfortable spacing
+- Minimal visual noise
+- Clear pressed state
+- Disabled state for unavailable letters
+
+==================================================
+SCREEN 5 — LEVEL COMPLETE
+==================================================
+
+After completing a puzzle:
+
+Show:
+
+- Completion feedback
+- Coins/reward
+- Stars or score
+- Progress toward the next level
+- Next Level button
+
+Optional:
+
+- Double reward via rewarded ad
+
+The completion screen should feel satisfying but should NOT become a giant celebration animation.
+
+Keep the reward hierarchy clear.
+
+Primary CTA:
+NEXT LEVEL
+
+Secondary:
+DOUBLE REWARD
+
+==================================================
+SCREEN 6 — DAILY REWARD
+==================================================
+
+Create a simple daily reward experience.
+
+Show:
+
+- Current streak
+- Today's reward
+- Upcoming rewards
+
+Avoid casino/gacha aesthetics.
+
+Do not use:
+- Loot boxes
+- Randomized reward wheels
+- Fake countdown pressure
+
+==================================================
+SCREEN 7 — SHOP
+==================================================
+
+The shop is intentionally simple.
+
+Only sell:
+
+1. Remove Ads
+2. Powerups
+
+Remove Ads:
+- One-time purchase
+- Clearly explain what it removes
+
+Powerups:
+- Hint
+- Reveal Letter
+- Reveal Word
+- Undo / Retry if applicable
+
+Do not introduce:
+
+- Energy system
+- Premium currency
+- Gacha
+- Loot boxes
+- Battle pass
+- Subscription
+- Multiple confusing currencies
+
+The shop should feel transparent and trustworthy.
+
+==================================================
+SCREEN 8 — REWARDED AD
+==================================================
+
+Rewarded ads should be presented as optional.
+
+Example:
+
+"Need a little help?"
+
+Watch a short video
+→ Receive 1 Hint
+
+or
+
+Watch a short video
+→ Double your level reward
+
+The UI must clearly communicate:
+
+- What the user receives
+- That the ad is optional
+- What happens after watching
+
+Do not use manipulative UI.
+
+==================================================
+SCREEN 9 — SETTINGS
+==================================================
+
+Simple settings screen:
+
+- Sound
+- Music
+- Vibration
+- Notifications
+- Restore Purchases
+- Privacy
+- Terms
+- App version
+
+Keep it minimal.
+
+==================================================
+UX PRINCIPLES
+==================================================
+
+Follow these rules across the entire product:
+
+1. The player should always understand what to do next.
+
+2. Every screen should have one obvious primary action.
+
+3. Avoid unnecessary confirmation dialogs.
+
+4. Keep navigation shallow.
+
+5. Preserve game state automatically.
+
+6. Never punish accidental taps.
+
+7. Use animation to communicate state changes, not decoration.
+
+8. Use consistent interaction patterns.
+
+9. Keep touch targets comfortable for mobile.
+
+10. The crossword board must remain the primary gameplay focus.
+
+11. Monetization must never interrupt active puzzle solving unnecessarily.
+
+12. Rewarded ads should always be opt-in.
+
+13. Avoid dark patterns.
+
+==================================================
+ANIMATION
+==================================================
+
+Animations should be subtle and purposeful.
+
+Use animation for:
+
+- Button press
+- Cell selection
+- Letter placement
+- Correct answer
+- Incorrect answer
+- Word completion
+- Level completion
+- Reward collection
+- Map progression
+
+Avoid:
+
+- Constant floating animations
+- Excessive particle effects
+- Large screen transitions
+- Long animations that delay gameplay
+
+Gameplay should feel responsive.
+
+Target animation duration:
+approximately 120–350ms for normal interactions.
+
+Major completion animation:
+approximately 500–1000ms.
+
+==================================================
+RESPONSIVE DESIGN
+==================================================
+
+Design primarily for Android portrait phones.
+
+Support different phone sizes and aspect ratios.
+
+The UI must not depend on a fixed screen resolution.
+
+Important:
+
+- Crossword grid should scale proportionally.
+- Text must remain readable.
+- Buttons must remain tappable.
+- Bottom navigation must remain accessible.
+- Content must respect safe areas.
+- Avoid elements touching screen edges.
+
+Design around mobile constraints, not desktop layouts compressed into a phone.
+
+==================================================
+FLUTTER IMPLEMENTATION REQUIREMENTS
+==================================================
+
+The final UI will be implemented using:
+
+Flutter
+Flutter Material / custom Flutter widgets
+Optional Flame only if required for game-specific rendering
+
+The design should therefore be implementable using:
+
+- StatelessWidget / StatefulWidget
+- Custom widgets
+- CustomPainter where appropriate
+- AnimatedContainer
+- TweenAnimationBuilder
+- Hero / page transitions where appropriate
+- Flutter navigation
+- Responsive layout
+- Custom theme
+
+Do NOT design interactions that require a completely different game engine.
+
+The crossword board should be implementable as a reusable Flutter component.
+
+Suggested conceptual component hierarchy:
+
+App
+├── AppTheme
+├── Navigation
+│
+├── HomeScreen
+├── MapScreen
+├── LevelScreen
+├── PuzzleScreen
+│   ├── PuzzleHeader
+│   ├── CrosswordGrid
+│   ├── ClueArea
+│   ├── GameKeyboard
+│   └── PuzzleActions
+│
+├── LevelCompleteSheet
+├── DailyRewardScreen
+├── ShopScreen
+└── SettingsScreen
+
+The exact architecture can be adapted during Flutter implementation, but the visual hierarchy MUST remain consistent with the Stitch design.
+
+==================================================
+DESIGN OUTPUT
+==================================================
+
+Create the following screens as a SINGLE cohesive product:
+
+1. Home
+2. World / Island Map
+3. Level Selection
+4. Crossword Gameplay
+5. Level Complete
+6. Daily Reward
+7. Shop
+8. Rewarded Ad Dialog
+9. Settings
+
+All screens must clearly belong to the same game.
+
+Do not produce nine unrelated UI concepts.
+
+The same:
+- typography
+- spacing
+- color palette
+- button language
+- corner radius
+- iconography
+- animation language
+- visual hierarchy
+
+must be reused across the entire product.
+
+==================================================
+CRITICAL FINAL REQUIREMENT
+==================================================
+
+The result must look like a real mobile crossword game that could actually be shipped.
+
+It must NOT look like:
+- a Dribbble concept
+- a SaaS dashboard
+- a generic AI-generated mobile app
+- a Wordscapes clone
+- a Candy Crush clone
+- a random collection of attractive screens
+
+The crossword/TTS gameplay must be the core identity.
+
+Prioritize:
+USABILITY > DECORATION
+CLARITY > COMPLEXITY
+GAMEPLAY > VISUAL EFFECTS
+CONSISTENCY > VARIETY
+PRODUCTION UI > CONCEPT ART
+
+STITCH IS THE UI/UX SOURCE OF TRUTH.
+Flutter is the implementation technology, not a reason to change the design.
