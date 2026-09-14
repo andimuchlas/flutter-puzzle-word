@@ -1,0 +1,124 @@
+{
+  "@@locale": "en",
+  "appTitle": "Word Archipelago",
+  "play": "PLAY",
+  "continuePlaying": "CONTINUE",
+  "levelLabel": "Level {number}",
+  "@levelLabel": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "islandLevelHeader": "Island {islandNum} • Level {levelNum}",
+  "@islandLevelHeader": {
+    "placeholders": {
+      "islandNum": {
+        "type": "int"
+      },
+      "levelNum": {
+        "type": "int"
+      }
+    }
+  },
+  "currentIsland": "CURRENT ISLAND",
+  "crosswordPuzzle": "Crossword Puzzle",
+  "connectLetters": "CONNECT LETTERS",
+  "across": "ACROSS",
+  "down": "DOWN",
+  "lettersCount": "{count} letters",
+  "@lettersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyIslandGift": "Daily Island Gift",
+  "dailyGiftDesc": "Claim free hints & bonus coins every day",
+  "dailyGiftClaimed": "Claimed for today! Come back tomorrow.",
+  "claim": "Claim",
+  "claimed": "Claimed",
+  "quickInventory": "QUICK INVENTORY",
+  "hint": "Hint",
+  "wordReveal": "Word Reveal",
+  "cleanse": "Cleanse",
+  "spectacular": "SPECTACULAR!",
+  "levelCompleteSubtitle": "You solved all words in this island puzzle!",
+  "nextLevel": "NEXT LEVEL",
+  "watchDoubleReward": "Watch Video for 2x Coins (+{coins})",
+  "@watchDoubleReward": {
+    "placeholders": {
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
+  "replayLevel": "Replay Level",
+  "archipelagoShop": "Archipelago Shop",
+  "shopSubtitle": "Support the game with one-time purchases and powerup bundles",
+  "removeAds": "Remove All Ads",
+  "removeAdsDesc": "Permanent one-time purchase. Enjoy ad-free crossword solving.",
+  "explorerBundle": "Explorer Bundle",
+  "explorerBundleDesc": "5 Hints + 3 Word Reveals + 500 Coins",
+  "settings": "Settings",
+  "soundEffects": "Sound Effects",
+  "music": "Music",
+  "hapticFeedback": "Haptic Feedback",
+  "language": "Language",
+  "restorePurchases": "Restore Purchases",
+  "islandsMap": "Islands Map",
+  "zoneProgress": "ZONE 1 OF 6",
+  "archipelagoProgress": "Archipelago Progress",
+  "locked": "Locked",
+  "ready": "Ready",
+  "nextUp": "Next Up",
+  "cleared": "Cleared",
+  "mastered": "Mastered",
+  "needHelp": "Need a little help?",
+  "rewardedAdPrompt": "Watch a short video sponsor to receive {reward}. Completely optional.",
+  "@rewardedAdPrompt": {
+    "placeholders": {
+      "reward": {
+        "type": "String"
+      }
+    }
+  },
+  "watchVideo": "WATCH VIDEO",
+  "noThanks": "No thanks",
+  "homeNav": "Home",
+  "islandsNav": "Islands",
+  "shopNav": "Shop",
+  "settingsNav": "Settings",
+  "bonusWordFound": "Bonus word \"{word}\" (+{coins} coins)!",
+  "@bonusWordFound": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      },
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
+  "alreadySolved": "Already solved \"{word}\"!",
+  "@alreadySolved": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      }
+    }
+  },
+  "wordSolved": "Solved \"{word}\"!",
+  "@wordSolved": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      }
+    }
+  },
+  "notInPuzzle": "Not in puzzle",
+  "coins": "Coins",
+  "freeLetterHint": "1 Free Hint"
+}

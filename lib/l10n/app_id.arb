@@ -1,0 +1,124 @@
+{
+  "@@locale": "id",
+  "appTitle": "Word Archipelago",
+  "play": "MAIN",
+  "continuePlaying": "LANJUTKAN",
+  "levelLabel": "Level {number}",
+  "@levelLabel": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "islandLevelHeader": "Pulau {islandNum} • Level {levelNum}",
+  "@islandLevelHeader": {
+    "placeholders": {
+      "islandNum": {
+        "type": "int"
+      },
+      "levelNum": {
+        "type": "int"
+      }
+    }
+  },
+  "currentIsland": "PULAU SAAT INI",
+  "crosswordPuzzle": "Teka-Teki Silang",
+  "connectLetters": "HUBUNGKAN HURUF",
+  "across": "MENDATAR",
+  "down": "MENURUN",
+  "lettersCount": "{count} huruf",
+  "@lettersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyIslandGift": "Hadiah Harian Pulau",
+  "dailyGiftDesc": "Klaim petunjuk gratis & koin bonus setiap hari",
+  "dailyGiftClaimed": "Sudah diklaim hari ini! Kembali lagi besok.",
+  "claim": "Klaim",
+  "claimed": "Diklaim",
+  "quickInventory": "INVENTARIS CEPAT",
+  "hint": "Petunjuk",
+  "wordReveal": "Buka Kata",
+  "cleanse": "Bersihkan",
+  "spectacular": "LUAR BIASA!",
+  "levelCompleteSubtitle": "Kamu berhasil menyelesaikan semua kata di teka-teki pulau ini!",
+  "nextLevel": "LEVEL BERIKUTNYA",
+  "watchDoubleReward": "Tonton Video untuk Koin 2x (+{coins})",
+  "@watchDoubleReward": {
+    "placeholders": {
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
+  "replayLevel": "Main Ulang Level",
+  "archipelagoShop": "Toko Kepulauan",
+  "shopSubtitle": "Dukung game dengan pembelian sekali dan paket bantuan",
+  "removeAds": "Hapus Semua Iklan",
+  "removeAdsDesc": "Pembelian permanen sekali bayar. Nikmati teka-teki silang tanpa iklan.",
+  "explorerBundle": "Paket Penjelajah",
+  "explorerBundleDesc": "5 Petunjuk + 3 Buka Kata + 500 Koin",
+  "settings": "Pengaturan",
+  "soundEffects": "Efek Suara",
+  "music": "Musik",
+  "hapticFeedback": "Getaran Haptic",
+  "language": "Bahasa",
+  "restorePurchases": "Pulihkan Pembelian",
+  "islandsMap": "Peta Kepulauan",
+  "zoneProgress": "ZONA 1 DARI 6",
+  "archipelagoProgress": "Kemajuan Kepulauan",
+  "locked": "Terkunci",
+  "ready": "Siap",
+  "nextUp": "Selanjutnya",
+  "cleared": "Selesai",
+  "mastered": "Sempurna",
+  "needHelp": "Butuh bantuan?",
+  "rewardedAdPrompt": "Tonton video sponsor singkat untuk mendapatkan {reward}. Sepenuhnya opsional.",
+  "@rewardedAdPrompt": {
+    "placeholders": {
+      "reward": {
+        "type": "String"
+      }
+    }
+  },
+  "watchVideo": "TONTON VIDEO",
+  "noThanks": "Lain kali",
+  "homeNav": "Beranda",
+  "islandsNav": "Kepulauan",
+  "shopNav": "Toko",
+  "settingsNav": "Pengaturan",
+  "bonusWordFound": "Kata bonus \"{word}\" (+{coins} koin)!",
+  "@bonusWordFound": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      },
+      "coins": {
+        "type": "int"
+      }
+    }
+  },
+  "alreadySolved": "Kata \"{word}\" sudah terpecahkan!",
+  "@alreadySolved": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      }
+    }
+  },
+  "wordSolved": "Berhasil: \"{word}\"!",
+  "@wordSolved": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      }
+    }
+  },
+  "notInPuzzle": "Tidak ada dalam teka-teki",
+  "coins": "Koin",
+  "freeLetterHint": "1 Petunjuk Gratis"
+}

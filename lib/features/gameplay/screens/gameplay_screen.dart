@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import '../../../../core/services/game_state.dart';
-import '../../../../core/theme/island_colors.dart';
-import '../../../../core/theme/island_typography.dart';
-import '../../../../core/widgets/coin_badge.dart';
-import '../../victory/widgets/level_complete_dialog.dart';
-import '../models/crossword_models.dart';
-import '../widgets/active_clue_banner.dart';
-import '../widgets/clue_accordion_widget.dart';
-import '../widgets/crossword_grid_widget.dart';
-import '../widgets/letter_wheel/letter_wheel_widget.dart';
-import '../widgets/powerup_dock.dart';
+import 'package:word_archipelago/core/services/game_state.dart';
+import 'package:word_archipelago/core/theme/island_colors.dart';
+import 'package:word_archipelago/core/theme/island_typography.dart';
+import 'package:word_archipelago/core/widgets/coin_badge.dart';
+import 'package:word_archipelago/domain/models/puzzle_level.dart';
+import 'package:word_archipelago/features/gameplay/view_models/gameplay_view_model.dart';
+import 'package:word_archipelago/features/gameplay/widgets/crossword_grid_widget.dart';
+import 'package:word_archipelago/features/gameplay/widgets/island_scenic_background.dart';
+import 'package:word_archipelago/features/gameplay/widgets/letter_wheel/letter_wheel_widget.dart';
+import 'package:word_archipelago/features/victory/widgets/level_complete_dialog.dart';
+import 'package:word_archipelago/l10n/app_localizations.dart';
 
 class GameplayScreen extends StatefulWidget {
   final PuzzleLevel? level;
@@ -21,381 +21,137 @@ class GameplayScreen extends StatefulWidget {
 }
 
 class _GameplayScreenState extends State<GameplayScreen> {
-  late PuzzleLevel _level;
-  int _activeWordIndex = 0;
-  String? _newlySolvedWordId;
-  String? _toastMessage;
-  IconData? _toastIcon;
+  late GameplayViewModel _viewModel;
 
   @override
   void initState() {
     super.initState();
-    _level = widget.level ?? PuzzleLevel.getSampleLevel12();
-    _selectFirstUnsolvedWord();
+    final initialLevel = widget.level ?? PuzzleLevel.getLevel(GameState().currentLevel);
+    _viewModel = GameplayViewModel(
+      level: initialLevel,
+      repository: GameState().repository,
+    );
+    _viewModel.addListener(_onViewModelUpdate);
   }
 
-  void _selectFirstUnsolvedWord() {
-    for (int i = 0; i < _level.words.length; i++) {
-      if (!_level.words[i].isSolved) {
-        _activeWordIndex = i;
-        return;
-      }
+  @override
+  void didUpdateWidget(covariant GameplayScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.level != null && widget.level != oldWidget.level) {
+      _viewModel.removeListener(_onViewModelUpdate);
+      _viewModel.dispose();
+      _viewModel = GameplayViewModel(
+        level: widget.level!,
+        repository: GameState().repository,
+      );
+      _viewModel.addListener(_onViewModelUpdate);
     }
   }
 
-  CrosswordWord get _activeWord => _level.words[_activeWordIndex];
-
-  void _nextClue() {
-    setState(() {
-      _activeWordIndex = (_activeWordIndex + 1) % _level.words.length;
-    });
+  @override
+  void dispose() {
+    _viewModel.removeListener(_onViewModelUpdate);
+    _viewModel.dispose();
+    super.dispose();
   }
 
-  void _prevClue() {
-    setState(() {
-      _activeWordIndex =
-          (_activeWordIndex - 1 + _level.words.length) % _level.words.length;
-    });
-  }
-
-  void _showToast(String message, [IconData? icon]) {
-    setState(() {
-      _toastMessage = message;
-      _toastIcon = icon;
-    });
-    Future.delayed(const Duration(milliseconds: 1600), () {
-      if (mounted) {
-        setState(() {
-          _toastMessage = null;
-        });
-      }
-    });
-  }
-
-  void _handleWordSubmitted(String submittedWord) {
-    final wordUpper = submittedWord.toUpperCase();
-
-    // 1. Check if word matches any unsolved crossword word
-    CrosswordWord? matchedWord;
-    for (final w in _level.words) {
-      if (w.word == wordUpper) {
-        if (w.isSolved) {
-          _showToast('Already found "$wordUpper"!', Icons.info_outline);
-          return;
-        } else {
-          matchedWord = w;
-          break;
-        }
-      }
+  void _onViewModelUpdate() {
+    if (!mounted) return;
+    if (_viewModel.isLevelComplete) {
+      _showLevelCompleteDialog();
     }
-
-    if (matchedWord != null) {
-      setState(() {
-        matchedWord!.isSolved = true;
-        _newlySolvedWordId = matchedWord.id;
-      });
-
-      _showToast('Solved "${matchedWord.word}"!', Icons.check_circle);
-
-      // Check if all words in level are solved
-      final allSolved = _level.words.every((w) => w.isSolved);
-      if (allSolved) {
-        Future.delayed(const Duration(milliseconds: 700), () {
-          _handleLevelComplete();
-        });
-      } else {
-        _selectFirstUnsolvedWord();
-      }
-
-      Future.delayed(const Duration(milliseconds: 1000), () {
-        if (mounted) {
-          setState(() {
-            _newlySolvedWordId = null;
-          });
-        }
-      });
-      return;
-    }
-
-    // 2. Check if it's in bonus words
-    if (_level.bonusWords.contains(wordUpper)) {
-      GameState().addCoins(5);
-      _showToast('Bonus word "$wordUpper" (+5 coins)!', Icons.stars);
-      return;
-    }
-
-    // 3. Invalid word
-    _showToast('Not in puzzle', Icons.close);
   }
 
-  void _handleLevelComplete() {
-    GameState().completeCurrentLevel(3, 25);
-
+  void _showLevelCompleteDialog() {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (ctx) => LevelCompleteDialog(
-        levelNumber: _level.levelNumber,
-        islandName: _level.islandName,
-        keyword: 'ISLAND',
+        levelNumber: _viewModel.level.levelNumber,
+        islandName: _viewModel.level.islandName,
+        keyword: _viewModel.level.words.isNotEmpty
+            ? _viewModel.level.words.first.word
+            : 'ISLAND',
         earnedCoins: 25,
         onNextLevel: () {
           Navigator.of(ctx).pop();
-          Navigator.of(context).pop();
+          final nextLevelNum = _viewModel.level.levelNumber + 1;
+          if (nextLevelNum <= 5) {
+            setState(() {
+              _viewModel.dispose();
+              _viewModel = GameplayViewModel(
+                level: PuzzleLevel.getLevel(nextLevelNum),
+                repository: GameState().repository,
+              );
+              _viewModel.addListener(_onViewModelUpdate);
+            });
+          } else {
+            Navigator.of(context).pop();
+          }
         },
         onWatchDoubleVideo: () {
           GameState().addCoins(50);
           Navigator.of(ctx).pop();
-          Navigator.of(context).pop();
+          final nextLevelNum = _viewModel.level.levelNumber + 1;
+          if (nextLevelNum <= 5) {
+            setState(() {
+              _viewModel.dispose();
+              _viewModel = GameplayViewModel(
+                level: PuzzleLevel.getLevel(nextLevelNum),
+                repository: GameState().repository,
+              );
+              _viewModel.addListener(_onViewModelUpdate);
+            });
+          } else {
+            Navigator.of(context).pop();
+          }
         },
         onReplay: () {
           Navigator.of(ctx).pop();
-          setState(() {
-            for (final w in _level.words) {
-              w.isSolved = false;
-            }
-            _selectFirstUnsolvedWord();
-          });
+          _viewModel.replayLevel();
         },
       ),
     );
   }
 
-  void _useLetterHint() {
-    if (GameState().useHint()) {
-      // Reveal a cell in active word that isn't solved
-      if (!_activeWord.isSolved) {
-        setState(() {
-          _activeWord.isSolved = true;
-          _newlySolvedWordId = _activeWord.id;
-        });
-        _showToast('Letter hint revealed word "${_activeWord.word}"!', Icons.lightbulb);
-        _selectFirstUnsolvedWord();
-      } else {
-        _showToast('Current word already revealed!');
-      }
-    } else {
-      _showToast('Need 50 coins for Letter Hint!');
-    }
-  }
-
-  void _useWordHint() {
-    if (GameState().useWordReveal()) {
-      setState(() {
-        _activeWord.isSolved = true;
-        _newlySolvedWordId = _activeWord.id;
-      });
-      _showToast('Word "${_activeWord.word}" revealed!', Icons.auto_fix_high);
-
-      final allSolved = _level.words.every((w) => w.isSolved);
-      if (allSolved) {
-        Future.delayed(const Duration(milliseconds: 600), _handleLevelComplete);
-      } else {
-        _selectFirstUnsolvedWord();
-      }
-    } else {
-      _showToast('Need 100 coins for Word Reveal!');
-    }
-  }
-
-  void _useCleanse() {
-    if (GameState().useCleanse()) {
-      _showToast('Grid validated & cleansed!', Icons.check_circle);
-    } else {
-      _showToast('Need 30 coins for Cleanse!');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return ListenableBuilder(
-      listenable: GameState(),
+      listenable: Listenable.merge([GameState(), _viewModel]),
       builder: (context, _) {
         final gameState = GameState();
+        final level = _viewModel.level;
 
         return Scaffold(
-          backgroundColor: IslandColors.surface,
-          body: SafeArea(
-            child: Stack(
-              children: [
-                Column(
-                  children: [
-                    // 1. TOP APP BAR
-                    Container(
-                      height: 56,
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.95),
-                        border: Border(
-                          bottom: BorderSide(
-                            color: IslandColors.surfaceContainerHigh.withOpacity(0.8),
-                          ),
+          body: IslandScenicBackground(
+            islandNumber: level.islandNumber,
+            child: SafeArea(
+              child: Stack(
+                children: [
+                  Column(
+                    children: [
+                      // Top App Bar
+                      _buildAppBar(context, gameState, level, l10n),
+
+                      // Main Content (Adaptive layout for Phone & Tablet)
+                      Expanded(
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            if (constraints.maxWidth >= 600) {
+                              return _buildWideLayout(gameState, level);
+                            } else {
+                              return _buildPhoneLayout(gameState, level);
+                            }
+                          },
                         ),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          // Back Button
-                          GestureDetector(
-                            onTap: () => Navigator.of(context).pop(),
-                            child: Container(
-                              width: 38,
-                              height: 38,
-                              decoration: BoxDecoration(
-                                color: IslandColors.surfaceContainerLow,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.chevron_left,
-                                color: IslandColors.onSurface,
-                              ),
-                            ),
-                          ),
+                    ],
+                  ),
 
-                          // Island & Level Title
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Island ${_level.islandNumber} • Level ${_level.levelNumber}',
-                                style: IslandTypography.headlineSm(
-                                  color: IslandColors.onSurface,
-                                ).copyWith(fontSize: 14),
-                              ),
-                              const SizedBox(height: 2),
-                              Row(
-                                children: [
-                                  Text(
-                                    _level.islandName,
-                                    style: IslandTypography.bodySm(
-                                      color: IslandColors.onSurfaceVariant,
-                                    ).copyWith(fontSize: 10),
-                                  ),
-                                  const SizedBox(width: 4),
-                                  const Text('•', style: TextStyle(color: IslandColors.outlineVariant, fontSize: 10)),
-                                  const SizedBox(width: 4),
-                                  SizedBox(
-                                    width: 48,
-                                    height: 5,
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(999),
-                                      child: LinearProgressIndicator(
-                                        value: (_level.levelNumber % 30) / 30.0,
-                                        backgroundColor: IslandColors.surfaceContainerHighest,
-                                        valueColor: const AlwaysStoppedAnimation(IslandColors.primaryLight),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    '${_level.levelNumber}/30',
-                                    style: IslandTypography.labelSm(
-                                      color: IslandColors.primaryLight,
-                                    ).copyWith(fontSize: 9.5),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-
-                          // Coins Badge & Pause
-                          Row(
-                            children: [
-                              IslandCoinBadge(coins: gameState.coins),
-                              const SizedBox(width: 6),
-                              GestureDetector(
-                                onTap: () => Navigator.of(context).pop(),
-                                child: Container(
-                                  width: 34,
-                                  height: 34,
-                                  decoration: BoxDecoration(
-                                    color: IslandColors.surfaceContainerLow,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Icon(
-                                    Icons.pause,
-                                    color: IslandColors.onSurfaceVariant,
-                                    size: 18,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // 2. MAIN SCROLLABLE CONTENT
-                    Expanded(
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
-                        child: Column(
-                          children: [
-                            // Active Clue Banner
-                            ActiveClueBanner(
-                              activeWord: _activeWord,
-                              onPrevious: _prevClue,
-                              onNext: _nextClue,
-                            ),
-
-                            const SizedBox(height: 8),
-
-                            // Crossword Grid
-                            CrosswordGridWidget(
-                              level: _level,
-                              activeWord: _activeWord,
-                              newlySolvedWordId: _newlySolvedWordId,
-                              onWordSelected: (w) {
-                                final idx = _level.words.indexOf(w);
-                                if (idx != -1) {
-                                  setState(() => _activeWordIndex = idx);
-                                }
-                              },
-                            ),
-
-                            const SizedBox(height: 8),
-
-                            // Compact Dual Clue Accordion
-                            ClueAccordionWidget(
-                              words: _level.words,
-                              activeWord: _activeWord,
-                              onSelectWord: (w) {
-                                final idx = _level.words.indexOf(w);
-                                if (idx != -1) {
-                                  setState(() => _activeWordIndex = idx);
-                                }
-                              },
-                            ),
-
-                            const SizedBox(height: 8),
-
-                            // Powerup Dock
-                            PowerupDock(
-                              letterHintCount: gameState.hintCount,
-                              wordHintCount: gameState.wordRevealCount,
-                              checkCount: gameState.cleanseCount,
-                              onLetterHint: _useLetterHint,
-                              onWordHint: _useWordHint,
-                              onCheck: _useCleanse,
-                            ),
-
-                            const SizedBox(height: 8),
-
-                            // Interactive Letter Wheel
-                            LetterWheelWidget(
-                              letters: _level.wheelLetters,
-                              onWordSubmitted: _handleWordSubmitted,
-                              size: 260,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-                // Toast Notification floating overlay
-                if (_toastMessage != null)
+                // Floating Toast Notification
+                if (_viewModel.toastMessage != null)
                   Positioned(
                     top: 68,
                     left: 0,
@@ -403,7 +159,7 @@ class _GameplayScreenState extends State<GameplayScreen> {
                     child: Center(
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 6),
+                            horizontal: 16, vertical: 8),
                         decoration: BoxDecoration(
                           color: const Color(0xE60F172A),
                           borderRadius: BorderRadius.circular(999),
@@ -418,17 +174,19 @@ class _GameplayScreenState extends State<GameplayScreen> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            if (_toastIcon != null) ...[
-                              Icon(_toastIcon,
-                                  color: IslandColors.secondaryContainer,
-                                  size: 16),
-                              const SizedBox(width: 6),
+                            if (_viewModel.toastIcon != null) ...[
+                              Icon(
+                                _viewModel.toastIcon,
+                                color: IslandColors.secondaryContainer,
+                                size: 18,
+                              ),
+                              const SizedBox(width: 8),
                             ],
                             Text(
-                              _toastMessage!,
+                              _viewModel.toastMessage!,
                               style: IslandTypography.labelSm(
                                 color: Colors.white,
-                              ),
+                              ).copyWith(fontSize: 12),
                             ),
                           ],
                         ),
@@ -438,8 +196,284 @@ class _GameplayScreenState extends State<GameplayScreen> {
               ],
             ),
           ),
+        ),
+      );
+    },
+  );
+}
+
+  Widget _buildAppBar(
+    BuildContext context,
+    GameState gameState,
+    PuzzleLevel level,
+    AppLocalizations? l10n,
+  ) {
+    return Container(
+      height: 56,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // Back Button (Frosted Circle)
+          GestureDetector(
+            onTap: () => Navigator.of(context).pop(),
+            child: Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.35),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.40),
+                  width: 1.2,
+                ),
+              ),
+              child: const Icon(
+                Icons.chevron_left,
+                color: Colors.white,
+                size: 26,
+              ),
+            ),
+          ),
+
+          // Island & Level Title
+          Expanded(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    l10n?.islandLevelHeader(level.islandNumber, level.levelNumber) ??
+                        'Island ${level.islandNumber} • Level ${level.levelNumber}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: IslandTypography.headlineSm(
+                      color: Colors.white,
+                    ).copyWith(
+                      fontSize: 14.5,
+                      fontWeight: FontWeight.bold,
+                      shadows: const [
+                        Shadow(
+                          color: Colors.black54,
+                          offset: Offset(0, 1),
+                          blurRadius: 4,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          level.islandName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: IslandTypography.bodySm(
+                            color: Colors.white.withOpacity(0.85),
+                          ).copyWith(
+                            fontSize: 11,
+                            shadows: const [
+                              Shadow(
+                                color: Colors.black54,
+                                offset: Offset(0, 1),
+                                blurRadius: 3,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 5),
+                      Text(
+                        '•',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.7),
+                          fontSize: 10,
+                        ),
+                      ),
+                      const SizedBox(width: 5),
+                      SizedBox(
+                        width: 44,
+                        height: 5,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(999),
+                          child: LinearProgressIndicator(
+                            value: (level.levelNumber / 5.0).clamp(0.0, 1.0),
+                            backgroundColor: Colors.white.withOpacity(0.3),
+                            valueColor: const AlwaysStoppedAnimation(
+                              Color(0xFFFBBF24),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 5),
+                      Text(
+                        '${level.levelNumber}/5',
+                        style: const TextStyle(
+                          color: Color(0xFFFDE68A),
+                          fontSize: 9.5,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Coins Badge & Pause
+          Row(
+            children: [
+              IslandCoinBadge(coins: gameState.coins),
+              const SizedBox(width: 6),
+              GestureDetector(
+                onTap: () => Navigator.of(context).pop(),
+                child: Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.35),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.40),
+                      width: 1,
+                    ),
+                  ),
+                  child: const Icon(
+                    Icons.pause,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPhoneLayout(GameState gameState, PuzzleLevel level) {
+    final l10n = AppLocalizations.of(context);
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxH = constraints.maxHeight;
+        // Dynamically scale letter wheel based on viewport height
+        final wheelSize = (maxH * 0.30).clamp(190.0, 220.0);
+
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(12, 6, 12, 12),
+          child: Column(
+            children: [
+              // Floating Crossword Grid (Scales adaptively to fill upper space)
+              Expanded(
+                child: Center(
+                  child: FittedBox(
+                    fit: BoxFit.contain,
+                    child: CrosswordGridWidget(
+                      level: level,
+                      activeWord: _viewModel.activeWord,
+                      newlySolvedWordId: _viewModel.newlySolvedWordId,
+                      onWordSelected: _viewModel.selectWord,
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              // Wordscapes Action Hub: Side Powerup Buttons + Letter Wheel
+              LetterWheelWidget(
+                letters: level.wheelLetters,
+                size: wheelSize,
+                onLetterHint: _viewModel.useLetterHint,
+                letterHintCount: gameState.hintCount,
+                onWordHint: _viewModel.useWordReveal,
+                wordHintCount: gameState.wordRevealCount,
+                onTargetHint: _viewModel.useCleanse,
+                targetHintCount: gameState.cleanseCount,
+                onWordSubmitted: (w) => _viewModel.handleWordSubmitted(
+                  w,
+                  onSolvedMsg: (word) =>
+                      l10n?.wordSolved(word) ?? 'Solved "$word"!',
+                  onAlreadySolvedMsg: (word) =>
+                      l10n?.alreadySolved(word) ?? 'Already solved "$word"!',
+                  onBonusWordMsg: (word, coins) =>
+                      l10n?.bonusWordFound(word, coins) ??
+                      'Bonus word "$word" (+$coins coins)!',
+                  notInPuzzleMsg: l10n?.notInPuzzle ?? 'Not in puzzle',
+                ),
+              ),
+            ],
+          ),
         );
       },
+    );
+  }
+
+  Widget _buildWideLayout(GameState gameState, PuzzleLevel level) {
+    final l10n = AppLocalizations.of(context);
+
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 960),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Left Column: Floating Crossword Grid
+              Expanded(
+                flex: 5,
+                child: Center(
+                  child: FittedBox(
+                    fit: BoxFit.contain,
+                    child: CrosswordGridWidget(
+                      level: level,
+                      activeWord: _viewModel.activeWord,
+                      newlySolvedWordId: _viewModel.newlySolvedWordId,
+                      onWordSelected: _viewModel.selectWord,
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(width: 24),
+
+              // Right Column: Letter Wheel & Action Controls
+              Expanded(
+                flex: 4,
+                child: Center(
+                  child: LetterWheelWidget(
+                    letters: level.wheelLetters,
+                    size: 240,
+                    onLetterHint: _viewModel.useLetterHint,
+                    letterHintCount: gameState.hintCount,
+                    onWordHint: _viewModel.useWordReveal,
+                    wordHintCount: gameState.wordRevealCount,
+                    onTargetHint: _viewModel.useCleanse,
+                    targetHintCount: gameState.cleanseCount,
+                    onWordSubmitted: (w) => _viewModel.handleWordSubmitted(
+                      w,
+                      onSolvedMsg: (word) =>
+                          l10n?.wordSolved(word) ?? 'Solved "$word"!',
+                      onAlreadySolvedMsg: (word) =>
+                          l10n?.alreadySolved(word) ?? 'Already solved "$word"!',
+                      onBonusWordMsg: (word, coins) =>
+                          l10n?.bonusWordFound(word, coins) ??
+                          'Bonus word "$word" (+$coins coins)!',
+                      notInPuzzleMsg: l10n?.notInPuzzle ?? 'Not in puzzle',
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

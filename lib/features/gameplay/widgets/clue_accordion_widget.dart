@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/island_colors.dart';
 import '../../../../core/theme/island_typography.dart';
-import '../models/crossword_models.dart';
+import '../../../../domain/models/crossword_word.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class ClueAccordionWidget extends StatefulWidget {
   final List<CrosswordWord> words;
@@ -24,6 +25,9 @@ class _ClueAccordionWidgetState extends State<ClueAccordionWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context).languageCode;
+
     final acrossWords =
         widget.words.where((w) => w.direction == WordDirection.across).toList();
     final downWords =
@@ -32,6 +36,9 @@ class _ClueAccordionWidgetState extends State<ClueAccordionWidget> {
     final currentList =
         _selectedDirection == WordDirection.across ? acrossWords : downWords;
     final solvedCount = widget.words.where((w) => w.isSolved).length;
+
+    final acrossLabel = l10n?.across ?? 'ACROSS';
+    final downLabel = l10n?.down ?? 'DOWN';
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -54,64 +61,76 @@ class _ClueAccordionWidgetState extends State<ClueAccordionWidget> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  GestureDetector(
-                    onTap: () =>
-                        setState(() => _selectedDirection = WordDirection.across),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: _selectedDirection == WordDirection.across
-                                ? IslandColors.primaryLight
-                                : Colors.transparent,
-                            width: 2,
+              Expanded(
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: GestureDetector(
+                        onTap: () =>
+                            setState(() => _selectedDirection = WordDirection.across),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 4),
+                          decoration: BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: _selectedDirection == WordDirection.across
+                                    ? IslandColors.primaryLight
+                                    : Colors.transparent,
+                                width: 2,
+                              ),
+                            ),
+                          ),
+                          child: Text(
+                            '$acrossLabel (${acrossWords.length})',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: IslandTypography.labelSm(
+                              color: _selectedDirection == WordDirection.across
+                                  ? IslandColors.primaryLight
+                                  : IslandColors.onSurfaceVariant,
+                            ).copyWith(fontWeight: FontWeight.bold, fontSize: 11),
                           ),
                         ),
                       ),
-                      child: Text(
-                        'ACROSS (${acrossWords.length})',
-                        style: IslandTypography.labelSm(
-                          color: _selectedDirection == WordDirection.across
-                              ? IslandColors.primaryLight
-                              : IslandColors.onSurfaceVariant,
-                        ).copyWith(fontWeight: FontWeight.bold),
-                      ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  GestureDetector(
-                    onTap: () =>
-                        setState(() => _selectedDirection = WordDirection.down),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: _selectedDirection == WordDirection.down
-                                ? IslandColors.primaryLight
-                                : Colors.transparent,
-                            width: 2,
+                    const SizedBox(width: 4),
+                    Flexible(
+                      child: GestureDetector(
+                        onTap: () =>
+                            setState(() => _selectedDirection = WordDirection.down),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 4),
+                          decoration: BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: _selectedDirection == WordDirection.down
+                                    ? IslandColors.primaryLight
+                                    : Colors.transparent,
+                                width: 2,
+                              ),
+                            ),
+                          ),
+                          child: Text(
+                            '$downLabel (${downWords.length})',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: IslandTypography.labelSm(
+                              color: _selectedDirection == WordDirection.down
+                                  ? IslandColors.primaryLight
+                                  : IslandColors.onSurfaceVariant,
+                            ).copyWith(fontWeight: FontWeight.bold, fontSize: 11),
                           ),
                         ),
                       ),
-                      child: Text(
-                        'DOWN (${downWords.length})',
-                        style: IslandTypography.labelSm(
-                          color: _selectedDirection == WordDirection.down
-                              ? IslandColors.primaryLight
-                              : IslandColors.onSurfaceVariant,
-                        ).copyWith(fontWeight: FontWeight.bold),
-                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
+              const SizedBox(width: 6),
               Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   const Icon(
                     Icons.check_circle,
@@ -120,7 +139,7 @@ class _ClueAccordionWidgetState extends State<ClueAccordionWidget> {
                   ),
                   const SizedBox(width: 3),
                   Text(
-                    '$solvedCount/${widget.words.length} Solved',
+                    '$solvedCount/${widget.words.length}',
                     style: IslandTypography.labelSm(
                       color: IslandColors.gameGreen,
                     ).copyWith(fontWeight: FontWeight.bold),
@@ -168,7 +187,7 @@ class _ClueAccordionWidgetState extends State<ClueAccordionWidget> {
                         ),
                         Expanded(
                           child: Text(
-                            w.clueText,
+                            w.getClue(locale),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: IslandTypography.bodySm(

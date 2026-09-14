@@ -14,31 +14,29 @@ PRODUCT
 ==================================================
 
 Game type:
-- Casual crossword / TTS word puzzle
+- Wordscapes-style Anagram Crossword (Teka Kata Anagram Silang)
+- Tema Utama: Nusantara (Kekayaan alam, budaya, rempah, bahari, dan kepulauan Indonesia)
+- Bahasa: Bahasa Indonesia untuk seluruh kosakata teka-teki, kamus anagram, dan kata bonus
+- Tampilan Zen: Full-bleed scenic wallpaper bentang alam Nusantara (Bali, Maluku, Candi Jawa, Borneo, Raja Ampat)
 - Android-first
 - Portrait orientation
 - One-handed mobile interaction
 - Short play sessions: approximately 2–10 minutes
-- Relaxing but satisfying gameplay
+- Relaxing, zen, but satisfying gameplay
 - Primarily offline playable
 - Monetized through:
   1. Optional rewarded ads
   2. Remove Ads purchase
   3. Powerup purchases
 
-Core gameplay is a crossword/TTS grid.
-
-This is NOT a Wordscapes-style letter-circle game.
-
-Do NOT use:
-- Letter wheel gameplay
-- Letter circle input
-- Word-connect mechanics
-- Candy Crush style gameplay
-- Match-3 mechanics
-- Generic "word game" UI
-
-The crossword/TTS grid must be the visual and interaction identity of the game.
+Core gameplay is a Wordscapes-style anagram crossword without trivia questions:
+- Floating Crossword Grid: Kotak-kotak kata transparan mengambang di atas pemandangan alam Nusantara. Sel kosong 100% transparan, sel terisi berwarna vibrant indigo dengan huruf tebal.
+- 100% Interconnected Grid Rule: Seluruh kata dalam grid teka-teki silang WAJIB terhubung dalam satu kesatuan graf (saling bersilangan tegak lurus). TIDAK BOLEH ada kata atau kluster kotak yang terpisah/terisolasi (disjoint / terpisah).
+- Anagram Validity: Seluruh kata di grid dan kata bonus wajib merupakan anagram sah yang disusun dari huruf-huruf pada roda huruf sesuai jumlah/frekuensinya.
+- Letter input mechanism: Circular tactile frosted letter wheel di bagian bawah dengan drag-ribbon trail, haptics, dan word preview capsule.
+- Action Hub: Tombol Shuffle dan Target Hint di sisi kiri roda huruf; tombol Bohlam Hint dan Rocket Word Reveal di sisi kanan roda huruf.
+- Anagram & Bonus Words: 5 level playable bertema Nusantara murni berbasis anagram huruf roda, dilengkapi sistem Kata Bonus (+koin).
+- Responsif satu layar penuh (zero-scroll) untuk ponsel maupun tablet.
 
 ==================================================
 DESIGN PHILOSOPHY

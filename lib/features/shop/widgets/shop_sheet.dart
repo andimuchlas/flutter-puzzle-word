@@ -3,12 +3,15 @@ import '../../../../core/services/game_state.dart';
 import '../../../../core/theme/island_colors.dart';
 import '../../../../core/theme/island_typography.dart';
 import '../../../../core/widgets/tactile_button.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class ShopSheet extends StatelessWidget {
   const ShopSheet({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
       decoration: const BoxDecoration(
@@ -30,12 +33,12 @@ class ShopSheet extends StatelessWidget {
           const SizedBox(height: 16),
 
           Text(
-            'Archipelago Shop',
+            l10n?.archipelagoShop ?? 'Archipelago Shop',
             style: IslandTypography.headlineMd(color: IslandColors.onSurface),
           ),
           const SizedBox(height: 4),
           Text(
-            'Support the game with one-time purchases and powerup bundles',
+            l10n?.shopSubtitle ?? 'Support the game with one-time purchases and powerup bundles',
             textAlign: TextAlign.center,
             style: IslandTypography.bodySm(color: IslandColors.onSurfaceVariant),
           ),
@@ -70,13 +73,13 @@ class ShopSheet extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Remove All Ads',
+                        l10n?.removeAds ?? 'Remove All Ads',
                         style: IslandTypography.headlineSm(
                           color: IslandColors.onSurface,
                         ).copyWith(fontSize: 14),
                       ),
                       Text(
-                        'Permanent one-time purchase. Enjoy ad-free crossword solving.',
+                        l10n?.removeAdsDesc ?? 'Permanent one-time purchase. Enjoy ad-free crossword solving.',
                         style: IslandTypography.bodySm(
                           color: IslandColors.onSurfaceVariant,
                         ).copyWith(fontSize: 10.5),
@@ -136,13 +139,13 @@ class ShopSheet extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Explorer Bundle',
+                        l10n?.explorerBundle ?? 'Explorer Bundle',
                         style: IslandTypography.headlineSm(
                           color: IslandColors.onSurface,
                         ).copyWith(fontSize: 14),
                       ),
                       Text(
-                        '5 Hints + 3 Word Reveals + 500 Coins',
+                        l10n?.explorerBundleDesc ?? '5 Hints + 3 Word Reveals + 500 Coins',
                         style: IslandTypography.bodySm(
                           color: IslandColors.onSurfaceVariant,
                         ).copyWith(fontSize: 10.5),

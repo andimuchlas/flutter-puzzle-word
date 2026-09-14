@@ -3,12 +3,15 @@ import '../../../../core/services/game_state.dart';
 import '../../../../core/theme/island_colors.dart';
 import '../../../../core/theme/island_typography.dart';
 import '../../../../core/widgets/tactile_button.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class DailyRewardSheet extends StatelessWidget {
   const DailyRewardSheet({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return ListenableBuilder(
       listenable: GameState(),
       builder: (context, _) {
@@ -35,18 +38,18 @@ class DailyRewardSheet extends StatelessWidget {
               const SizedBox(height: 16),
 
               Text(
-                'Daily Island Gift',
+                l10n?.dailyIslandGift ?? 'Daily Island Gift',
                 style: IslandTypography.headlineMd(color: IslandColors.onSurface),
               ),
               const SizedBox(height: 4),
               Text(
-                'Come back every day for free hints and bonus coins!',
+                l10n?.dailyGiftDesc ?? 'Claim free hints & bonus coins every day',
                 textAlign: TextAlign.center,
                 style: IslandTypography.bodySm(color: IslandColors.onSurfaceVariant),
               ),
               const SizedBox(height: 20),
 
-              // 7 Days Streak Row
+              // 5 Days Streak Row
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -80,7 +83,9 @@ class DailyRewardSheet extends StatelessWidget {
                 height: 48,
                 borderRadius: 14,
                 child: Text(
-                  gameState.dailyClaimed ? 'CLAIMED TODAY' : 'CLAIM TODAY (+100 COINS)',
+                  gameState.dailyClaimed
+                      ? (l10n?.claimed.toUpperCase() ?? 'CLAIMED TODAY')
+                      : '${l10n?.claim.toUpperCase() ?? 'CLAIM'} (+100 ${l10n?.coins.toUpperCase() ?? 'COINS'})',
                   style: IslandTypography.labelLg(color: Colors.white),
                 ),
               ),

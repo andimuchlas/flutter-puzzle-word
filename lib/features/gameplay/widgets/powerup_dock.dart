@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/island_colors.dart';
 import '../../../../core/theme/island_typography.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class PowerupDock extends StatelessWidget {
   final int letterHintCount;
@@ -22,6 +23,9 @@ class PowerupDock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final isId = Localizations.localeOf(context).languageCode.startsWith('id');
+
     return Row(
       children: [
         Expanded(
@@ -29,8 +33,8 @@ class PowerupDock extends StatelessWidget {
             icon: Icons.lightbulb,
             iconBg: const Color(0xFFFEF3C7),
             iconColor: const Color(0xFFB45309),
-            title: 'Letter',
-            subtitle: 'Reveal',
+            title: isId ? 'Huruf' : 'Letter',
+            subtitle: l10n?.hint ?? 'Hint',
             count: letterHintCount,
             badgeColor: const Color(0xFFF59E0B),
             onTap: onLetterHint,
@@ -42,8 +46,8 @@ class PowerupDock extends StatelessWidget {
             icon: Icons.auto_fix_high,
             iconBg: const Color(0xFFE0F2FE),
             iconColor: IslandColors.primaryLight,
-            title: 'Word',
-            subtitle: 'Reveal',
+            title: isId ? 'Kata' : 'Word',
+            subtitle: isId ? 'Buka' : 'Reveal',
             count: wordHintCount,
             badgeColor: IslandColors.primaryLight,
             onTap: onWordHint,
@@ -55,8 +59,8 @@ class PowerupDock extends StatelessWidget {
             icon: Icons.check_circle_outline,
             iconBg: const Color(0xFFD1FAE5),
             iconColor: IslandColors.gameGreen,
-            title: 'Check',
-            subtitle: 'Validate',
+            title: isId ? 'Cek' : 'Check',
+            subtitle: isId ? 'Periksa' : 'Validate',
             count: checkCount,
             badgeColor: IslandColors.gameGreen,
             onTap: onCheck,
@@ -78,11 +82,13 @@ class PowerupDock extends StatelessWidget {
   }) {
     return GestureDetector(
       onTap: onTap,
+      behavior: HitTestBehavior.opaque,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            height: 48,
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
@@ -98,32 +104,38 @@ class PowerupDock extends StatelessWidget {
             child: Row(
               children: [
                 Container(
-                  width: 28,
-                  height: 28,
+                  width: 32,
+                  height: 32,
                   decoration: BoxDecoration(
                     color: iconBg,
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(icon, size: 16, color: iconColor),
+                  child: Icon(icon, size: 18, color: iconColor),
                 ),
                 const SizedBox(width: 6),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      title,
-                      style: IslandTypography.labelSm(
-                        color: IslandColors.onSurface,
-                      ).copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      subtitle,
-                      style: IslandTypography.labelSm(
-                        color: IslandColors.onSurfaceVariant,
-                      ).copyWith(fontSize: 8.5),
-                    ),
-                  ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: IslandTypography.labelSm(
+                          color: IslandColors.onSurface,
+                        ).copyWith(fontWeight: FontWeight.bold, fontSize: 11),
+                      ),
+                      Text(
+                        subtitle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: IslandTypography.labelSm(
+                          color: IslandColors.onSurfaceVariant,
+                        ).copyWith(fontSize: 9),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -134,7 +146,7 @@ class PowerupDock extends StatelessWidget {
             top: -4,
             right: -2,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
               decoration: BoxDecoration(
                 color: badgeColor,
                 borderRadius: BorderRadius.circular(999),
@@ -150,7 +162,7 @@ class PowerupDock extends StatelessWidget {
                 count.toString(),
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 9,
+                  fontSize: 9.5,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'Rubik',
                 ),

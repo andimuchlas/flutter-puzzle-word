@@ -3,6 +3,8 @@ import '../../../../core/services/game_state.dart';
 import '../../../../core/theme/island_colors.dart';
 import '../../../../core/theme/island_typography.dart';
 import '../../../../core/widgets/coin_badge.dart';
+import '../../../../domain/models/puzzle_level.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../gameplay/screens/gameplay_screen.dart';
 
 class IslandMapScreen extends StatelessWidget {
@@ -12,6 +14,8 @@ class IslandMapScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return ListenableBuilder(
       listenable: GameState(),
       builder: (context, _) {
@@ -27,7 +31,7 @@ class IslandMapScreen extends StatelessWidget {
                   height: 58,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.92),
+                    color: Colors.white.withOpacity(0.95),
                     border: Border(
                       bottom: BorderSide(
                         color: IslandColors.surfaceContainerHigh.withOpacity(0.8),
@@ -43,8 +47,8 @@ class IslandMapScreen extends StatelessWidget {
                             GestureDetector(
                               onTap: onBack,
                               child: Container(
-                                width: 36,
-                                height: 36,
+                                width: 38,
+                                height: 38,
                                 margin: const EdgeInsets.only(right: 8),
                                 decoration: BoxDecoration(
                                   color: IslandColors.surfaceContainerLow,
@@ -53,13 +57,13 @@ class IslandMapScreen extends StatelessWidget {
                                 child: const Icon(
                                   Icons.arrow_back,
                                   color: IslandColors.onSurface,
-                                  size: 18,
+                                  size: 20,
                                 ),
                               ),
                             ),
                           Container(
-                            width: 34,
-                            height: 34,
+                            width: 36,
+                            height: 36,
                             decoration: BoxDecoration(
                               color: IslandColors.primaryFixed,
                               borderRadius: BorderRadius.circular(10),
@@ -67,7 +71,7 @@ class IslandMapScreen extends StatelessWidget {
                             child: const Icon(
                               Icons.explore,
                               color: IslandColors.primary,
-                              size: 20,
+                              size: 22,
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -76,13 +80,13 @@ class IslandMapScreen extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                'WORD ARCHIPELAGO',
+                                l10n?.appTitle.toUpperCase() ?? 'WORD ARCHIPELAGO',
                                 style: IslandTypography.labelSm(
                                   color: IslandColors.primary,
                                 ).copyWith(fontWeight: FontWeight.bold, fontSize: 9),
                               ),
                               Text(
-                                'Islands Map',
+                                l10n?.islandsMap ?? 'Islands Map',
                                 style: IslandTypography.headlineSm(
                                   color: IslandColors.onSurface,
                                 ).copyWith(fontSize: 15),
@@ -96,8 +100,8 @@ class IslandMapScreen extends StatelessWidget {
                           IslandCoinBadge(coins: gameState.coins),
                           const SizedBox(width: 8),
                           Container(
-                            width: 32,
-                            height: 32,
+                            width: 34,
+                            height: 34,
                             decoration: const BoxDecoration(
                               color: IslandColors.primary,
                               shape: BoxShape.circle,
@@ -105,7 +109,7 @@ class IslandMapScreen extends StatelessWidget {
                             child: const Icon(
                               Icons.person,
                               color: Colors.white,
-                              size: 18,
+                              size: 19,
                             ),
                           ),
                         ],
@@ -114,25 +118,30 @@ class IslandMapScreen extends StatelessWidget {
                   ),
                 ),
 
-                // 2. SCROLLABLE MAP BODY
+                // 2. SCROLLABLE MAP BODY (Constrained for tablets)
                 Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-                    child: Column(
-                      children: [
-                        // Top Island Summary Card
-                        _buildSummaryCard(gameState),
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 600),
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+                        child: Column(
+                          children: [
+                            // Top Island Summary Card
+                            _buildSummaryCard(gameState, l10n),
 
-                        const SizedBox(height: 16),
+                            const SizedBox(height: 16),
 
-                        // Winding Path Canvas Container
-                        _buildWindingPathCanvas(context, gameState),
+                            // Winding Path Canvas Container with 5 Levels
+                            _buildWindingPathCanvas(context, gameState, l10n),
 
-                        const SizedBox(height: 16),
+                            const SizedBox(height: 16),
 
-                        // Island 2: Preview & Unlock Card
-                        _buildIsland2Preview(),
-                      ],
+                            // Island 2: Preview & Unlock Card
+                            _buildIsland2Preview(),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -144,7 +153,7 @@ class IslandMapScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSummaryCard(GameState gameState) {
+  Widget _buildSummaryCard(GameState gameState, AppLocalizations? l10n) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -173,7 +182,7 @@ class IslandMapScreen extends StatelessWidget {
                       const Icon(Icons.explore, size: 14, color: IslandColors.primary),
                       const SizedBox(width: 4),
                       Text(
-                        'ZONE 1 OF 6',
+                        l10n?.zoneProgress ?? 'ZONE 1 OF 6',
                         style: IslandTypography.labelSm(
                           color: IslandColors.primary,
                         ).copyWith(fontWeight: FontWeight.bold),
@@ -204,7 +213,7 @@ class IslandMapScreen extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      '${gameState.totalStars} / 90',
+                      '${gameState.totalStars} / 15',
                       style: IslandTypography.labelMd(
                         color: IslandColors.secondary,
                       ),
@@ -221,13 +230,13 @@ class IslandMapScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Archipelago Progress',
+                l10n?.archipelagoProgress ?? 'Archipelago Progress',
                 style: IslandTypography.bodySm(
                   color: IslandColors.onSurfaceVariant,
                 ),
               ),
               Text(
-                '${gameState.currentLevel} / 30 Levels (60%)',
+                '${gameState.currentLevel} / 5 Levels (${(gameState.currentLevel * 20)}%)',
                 style: IslandTypography.labelSm(
                   color: IslandColors.primary,
                 ).copyWith(fontWeight: FontWeight.bold),
@@ -240,7 +249,7 @@ class IslandMapScreen extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(999),
             child: LinearProgressIndicator(
-              value: (gameState.currentLevel / 30.0).clamp(0.0, 1.0),
+              value: (gameState.currentLevel / 5.0).clamp(0.0, 1.0),
               minHeight: 10,
               backgroundColor: IslandColors.surfaceContainerHigh,
               valueColor: const AlwaysStoppedAnimation(IslandColors.tertiary),
@@ -251,7 +260,11 @@ class IslandMapScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildWindingPathCanvas(BuildContext context, GameState gameState) {
+  Widget _buildWindingPathCanvas(
+    BuildContext context,
+    GameState gameState,
+    AppLocalizations? l10n,
+  ) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
@@ -262,72 +275,61 @@ class IslandMapScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Stacked Stepping Stone Nodes (15 down to 10)
-          // Level 15: Locked
-          _buildLevelNode(
-            levelNumber: 15,
-            status: _NodeStatus.locked,
-            offsetX: 40,
-          ),
-
-          const SizedBox(height: 28),
-
-          // Level 14: Locked
-          _buildLevelNode(
-            levelNumber: 14,
-            status: _NodeStatus.locked,
-            offsetX: -40,
-          ),
-
-          const SizedBox(height: 28),
-
-          // Level 13: Next Up
-          _buildLevelNode(
-            levelNumber: 13,
-            status: _NodeStatus.nextUp,
-            offsetX: 40,
-            onTap: () => _openGameplay(context),
-          ),
-
-          const SizedBox(height: 32),
-
-          // Level 12: Active Playable
-          _buildLevelNode(
-            levelNumber: 12,
-            status: _NodeStatus.active,
-            offsetX: -35,
-            onTap: () => _openGameplay(context),
-          ),
-
-          const SizedBox(height: 32),
-
-          // Level 11: Cleared (2 Stars)
-          _buildLevelNode(
-            levelNumber: 11,
-            status: _NodeStatus.cleared,
-            stars: 2,
-            offsetX: 35,
-            onTap: () => _openGameplay(context),
-          ),
-
-          const SizedBox(height: 28),
-
-          // Level 10: Mastered (3 Stars)
-          _buildLevelNode(
-            levelNumber: 10,
-            status: _NodeStatus.mastered,
-            stars: 3,
-            offsetX: -35,
-            onTap: () => _openGameplay(context),
-          ),
+          // Render levels 5 down to 1 (top to bottom map trail)
+          for (int lvl = 5; lvl >= 1; lvl--) ...[
+            _buildNodeForLevel(context, gameState, lvl, l10n),
+            if (lvl > 1) const SizedBox(height: 26),
+          ],
         ],
       ),
     );
   }
 
-  void _openGameplay(BuildContext context) {
+  Widget _buildNodeForLevel(
+    BuildContext context,
+    GameState gameState,
+    int levelNumber,
+    AppLocalizations? l10n,
+  ) {
+    final offsets = [0.0, -35.0, 35.0, -30.0, 30.0, 0.0];
+    final offsetX = offsets[levelNumber % offsets.length];
+
+    _NodeStatus status;
+    int stars = 0;
+
+    if (levelNumber < gameState.currentLevel) {
+      status = _NodeStatus.mastered;
+      stars = 3;
+    } else if (levelNumber == gameState.currentLevel) {
+      status = _NodeStatus.active;
+    } else if (levelNumber <= gameState.highestUnlockedLevel) {
+      status = _NodeStatus.nextUp;
+    } else {
+      status = _NodeStatus.locked;
+    }
+
+    final isClickable = status != _NodeStatus.locked;
+
+    return _buildLevelNode(
+      levelNumber: levelNumber,
+      status: status,
+      stars: stars,
+      offsetX: offsetX,
+      l10n: l10n,
+      onTap: isClickable
+          ? () {
+              gameState.setCurrentLevel(levelNumber);
+              _openGameplay(context, levelNumber);
+            }
+          : null,
+    );
+  }
+
+  void _openGameplay(BuildContext context, int levelNumber) {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const GameplayScreen()),
+      MaterialPageRoute(
+        builder: (_) => GameplayScreen(level: PuzzleLevel.getLevel(levelNumber)),
+      ),
     );
   }
 
@@ -336,6 +338,7 @@ class IslandMapScreen extends StatelessWidget {
     required _NodeStatus status,
     int stars = 0,
     double offsetX = 0,
+    required AppLocalizations? l10n,
     VoidCallback? onTap,
   }) {
     return Transform.translate(
@@ -343,7 +346,6 @@ class IslandMapScreen extends StatelessWidget {
       child: Column(
         children: [
           if (status == _NodeStatus.active) ...[
-            // Bouncing PLAY marker
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
               decoration: BoxDecoration(
@@ -361,7 +363,7 @@ class IslandMapScreen extends StatelessWidget {
                 children: [
                   const Icon(Icons.play_arrow, size: 14, color: Colors.white),
                   Text(
-                    'PLAY',
+                    l10n?.play ?? 'PLAY',
                     style: IslandTypography.labelSm(color: Colors.white)
                         .copyWith(fontWeight: FontWeight.w900),
                   ),
@@ -403,7 +405,7 @@ class IslandMapScreen extends StatelessWidget {
                             levelNumber.toString(),
                             style: IslandTypography.titleTile(
                               color: status == _NodeStatus.nextUp
-                                  ? IslandColors.primary
+                                   ? IslandColors.primary
                                   : Colors.white,
                             ).copyWith(fontSize: 18),
                           ),
@@ -429,9 +431,9 @@ class IslandMapScreen extends StatelessWidget {
 
           const SizedBox(height: 4),
           Text(
-            _statusLabel(status),
+            _statusLabel(status, l10n),
             style: IslandTypography.labelSm(color: _statusLabelColor(status))
-                .copyWith(fontSize: 9),
+                .copyWith(fontSize: 9.5),
           ),
         ],
       ),
@@ -466,18 +468,18 @@ class IslandMapScreen extends StatelessWidget {
     }
   }
 
-  String _statusLabel(_NodeStatus status) {
+  String _statusLabel(_NodeStatus status, AppLocalizations? l10n) {
     switch (status) {
       case _NodeStatus.locked:
-        return 'Locked';
+        return l10n?.locked ?? 'Locked';
       case _NodeStatus.nextUp:
-        return 'Next Up';
+        return l10n?.nextUp ?? 'Next Up';
       case _NodeStatus.active:
-        return 'Ready';
+        return l10n?.ready ?? 'Ready';
       case _NodeStatus.cleared:
-        return 'Cleared';
+        return l10n?.cleared ?? 'Cleared';
       case _NodeStatus.mastered:
-        return 'Mastered';
+        return l10n?.mastered ?? 'Mastered';
     }
   }
 
@@ -544,7 +546,7 @@ class IslandMapScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Requires Level 30 completion',
+                  'Requires completing Level 5 in Island 1',
                   style: IslandTypography.bodySm(
                     color: IslandColors.onSurfaceVariant,
                   ).copyWith(fontSize: 11),

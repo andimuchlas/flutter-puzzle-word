@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/island_colors.dart';
 import '../../../../core/theme/island_typography.dart';
 import '../../../../core/widgets/tactile_button.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class LevelCompleteDialog extends StatelessWidget {
   final int levelNumber;
@@ -25,6 +26,7 @@ class LevelCompleteDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final letters = keyword.toUpperCase().split('');
 
     return Dialog(
@@ -68,14 +70,14 @@ class LevelCompleteDialog extends StatelessWidget {
                     children: [
                       // Headline
                       Text(
-                        'SPECTACULAR!',
+                        l10n?.spectacular ?? 'SPECTACULAR!',
                         style: IslandTypography.displayLg(
                           color: IslandColors.primary,
                         ).copyWith(fontSize: 28, letterSpacing: -0.5),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'You uncovered the secret archipelago word!',
+                        l10n?.levelCompleteSubtitle ?? 'You uncovered the secret archipelago word!',
                         textAlign: TextAlign.center,
                         style: IslandTypography.bodySm(
                           color: IslandColors.onSurfaceVariant,
@@ -290,7 +292,7 @@ class LevelCompleteDialog extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'NEXT LEVEL',
+                              l10n?.nextLevel ?? 'NEXT LEVEL',
                               style: IslandTypography.headlineSm(
                                 color: Colors.white,
                               ).copyWith(letterSpacing: 0.5),
@@ -326,7 +328,8 @@ class LevelCompleteDialog extends StatelessWidget {
                             ),
                             const SizedBox(width: 6),
                             Text(
-                              'Watch Video for 2x Coins (+${earnedCoins * 2})',
+                              l10n?.watchDoubleReward(earnedCoins * 2) ??
+                                  'Watch Video for 2x Coins (+${earnedCoins * 2})',
                               style: IslandTypography.labelLg(
                                 color: IslandColors.onSecondaryContainer,
                               ),
@@ -346,7 +349,7 @@ class LevelCompleteDialog extends StatelessWidget {
                           color: IslandColors.onSurfaceVariant,
                         ),
                         label: Text(
-                          'Replay Level',
+                          l10n?.replayLevel ?? 'Replay Level',
                           style: IslandTypography.labelSm(
                             color: IslandColors.onSurfaceVariant,
                           ),

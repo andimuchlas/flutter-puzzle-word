@@ -3,19 +3,23 @@ import '../../../../core/services/game_state.dart';
 import '../../../../core/theme/island_colors.dart';
 import '../../../../core/theme/island_typography.dart';
 import '../../../../core/widgets/tactile_button.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class RewardedAdDialog extends StatelessWidget {
-  final String rewardDescription;
+  final String? rewardDescription;
   final VoidCallback onRewardGranted;
 
   const RewardedAdDialog({
     super.key,
-    this.rewardDescription = '1 Free Hint',
+    this.rewardDescription,
     required this.onRewardGranted,
   });
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final rewardText = rewardDescription ?? (l10n?.freeLetterHint ?? '1 Free Hint');
+
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: const EdgeInsets.symmetric(horizontal: 24),
@@ -51,12 +55,13 @@ class RewardedAdDialog extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'Need a little help?',
+              l10n?.needHelp ?? 'Need a little help?',
               style: IslandTypography.headlineMd(color: IslandColors.onSurface),
             ),
             const SizedBox(height: 6),
             Text(
-              'Watch a short video sponsor to receive $rewardDescription. This is completely optional.',
+              l10n?.rewardedAdPrompt(rewardText) ??
+                  'Watch a short video sponsor to receive $rewardText. Completely optional.',
               textAlign: TextAlign.center,
               style: IslandTypography.bodySm(color: IslandColors.onSurfaceVariant),
             ),
@@ -65,7 +70,6 @@ class RewardedAdDialog extends StatelessWidget {
             TactileButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                // Simulate quick rewarded video completion
                 GameState().addCoins(50);
                 onRewardGranted();
               },
@@ -81,7 +85,7 @@ class RewardedAdDialog extends StatelessWidget {
                   const Icon(Icons.play_arrow, color: Colors.white, size: 20),
                   const SizedBox(width: 6),
                   Text(
-                    'WATCH VIDEO',
+                    l10n?.watchVideo ?? 'WATCH VIDEO',
                     style: IslandTypography.labelLg(color: Colors.white),
                   ),
                 ],
@@ -93,7 +97,7 @@ class RewardedAdDialog extends StatelessWidget {
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: Text(
-                'No thanks',
+                l10n?.noThanks ?? 'No thanks',
                 style: IslandTypography.bodySm(color: IslandColors.onSurfaceVariant),
               ),
             ),

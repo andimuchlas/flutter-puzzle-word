@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import '../../../../core/services/game_state.dart';
 import '../../../../core/theme/island_colors.dart';
 import '../../../../core/theme/island_typography.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class SettingsSheet extends StatelessWidget {
   const SettingsSheet({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return ListenableBuilder(
       listenable: GameState(),
       builder: (context, _) {
@@ -34,40 +37,85 @@ class SettingsSheet extends StatelessWidget {
               const SizedBox(height: 16),
 
               Text(
-                'Settings',
+                l10n?.settings ?? 'Settings',
                 style: IslandTypography.headlineMd(color: IslandColors.onSurface),
               ),
               const SizedBox(height: 16),
 
+              // Sound
               _buildToggleTile(
                 icon: Icons.volume_up,
-                title: 'Sound Effects',
+                title: l10n?.soundEffects ?? 'Sound Effects',
                 value: gameState.soundEnabled,
                 onChanged: (_) => gameState.toggleSound(),
               ),
               const Divider(color: IslandColors.outlineLight, height: 1),
 
+              // Music
               _buildToggleTile(
                 icon: Icons.music_note,
-                title: 'Music',
+                title: l10n?.music ?? 'Music',
                 value: gameState.musicEnabled,
                 onChanged: (_) => gameState.toggleMusic(),
               ),
               const Divider(color: IslandColors.outlineLight, height: 1),
 
+              // Haptics
               _buildToggleTile(
                 icon: Icons.vibration,
-                title: 'Haptic Feedback',
+                title: l10n?.hapticFeedback ?? 'Haptic Feedback',
                 value: gameState.vibrationEnabled,
                 onChanged: (_) => gameState.toggleVibration(),
               ),
               const Divider(color: IslandColors.outlineLight, height: 1),
 
+              // Language Selector Tile
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.language, color: IslandColors.onSurfaceVariant),
+                title: Text(
+                  l10n?.language ?? 'Language',
+                  style: IslandTypography.bodyMd(color: IslandColors.onSurface),
+                ),
+                trailing: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: IslandColors.surfaceContainerLow,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: IslandColors.outlineLight),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      value: gameState.languageCode,
+                      isDense: true,
+                      icon: const Icon(Icons.arrow_drop_down, color: IslandColors.primary),
+                      items: const [
+                        DropdownMenuItem(
+                          value: 'en',
+                          child: Text('English (US)'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'id',
+                          child: Text('Bahasa Indonesia'),
+                        ),
+                      ],
+                      onChanged: (val) {
+                        if (val != null) {
+                          gameState.setLanguage(val);
+                        }
+                      },
+                    ),
+                  ),
+                ),
+              ),
+              const Divider(color: IslandColors.outlineLight, height: 1),
+
+              // Restore Purchases
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.restore, color: IslandColors.onSurfaceVariant),
                 title: Text(
-                  'Restore Purchases',
+                  l10n?.restorePurchases ?? 'Restore Purchases',
                   style: IslandTypography.bodyMd(color: IslandColors.onSurface),
                 ),
                 trailing: const Icon(Icons.chevron_right, color: IslandColors.outlineVariant),
@@ -80,7 +128,7 @@ class SettingsSheet extends StatelessWidget {
 
               const SizedBox(height: 12),
               Text(
-                'Word Archipelago • Version 1.0.0 (Build 30)',
+                'Word Archipelago • Version 1.0.0 (Build 5 Levels)',
                 style: IslandTypography.labelSm(color: IslandColors.outline),
               ),
             ],

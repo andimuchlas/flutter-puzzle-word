@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/island_colors.dart';
 import '../../../../core/theme/island_typography.dart';
-import '../models/crossword_models.dart';
+import '../../../../domain/models/crossword_word.dart';
 
 class ActiveClueBanner extends StatelessWidget {
   final CrosswordWord activeWord;
@@ -17,6 +17,8 @@ class ActiveClueBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final locale = Localizations.localeOf(context).languageCode;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -43,16 +45,16 @@ class ActiveClueBanner extends StatelessWidget {
           GestureDetector(
             onTap: onPrevious,
             child: Container(
-              width: 28,
-              height: 28,
+              width: 32,
+              height: 32,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.18),
+                color: Colors.white.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(
                 Icons.chevron_left,
                 color: Colors.white,
-                size: 20,
+                size: 22,
               ),
             ),
           ),
@@ -75,14 +77,14 @@ class ActiveClueBanner extends StatelessWidget {
                         borderRadius: BorderRadius.circular(999),
                       ),
                       child: Text(
-                        activeWord.directionTag,
+                        activeWord.directionTag(locale),
                         style: IslandTypography.labelSm(color: Colors.white)
                             .copyWith(fontWeight: FontWeight.bold),
                       ),
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      activeWord.lengthTag,
+                      activeWord.lengthTag(locale),
                       style: IslandTypography.bodySm(
                         color: IslandColors.primaryFixed,
                       ),
@@ -91,9 +93,9 @@ class ActiveClueBanner extends StatelessWidget {
                 ),
                 const SizedBox(height: 3),
                 Text(
-                  '"${activeWord.clueText}"',
+                  '"${activeWord.getClue(locale)}"',
                   textAlign: TextAlign.center,
-                  maxLines: 1,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: IslandTypography.bodyMd(color: Colors.white)
                       .copyWith(fontWeight: FontWeight.w600),
@@ -108,16 +110,16 @@ class ActiveClueBanner extends StatelessWidget {
           GestureDetector(
             onTap: onNext,
             child: Container(
-              width: 28,
-              height: 28,
+              width: 32,
+              height: 32,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.18),
+                color: Colors.white.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(
                 Icons.chevron_right,
                 color: Colors.white,
-                size: 20,
+                size: 22,
               ),
             ),
           ),
